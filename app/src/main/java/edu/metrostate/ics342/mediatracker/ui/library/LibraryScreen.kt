@@ -34,9 +34,9 @@ fun LibraryScreen(
 ) {
     val items     by viewModel.libraryItems.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-    var selectedStatus by viewModel.filterState.collectAsState()
+    val selectedStatus by viewModel.filterState.collectAsState()
 
-    var selectedType   by rememberSaveable { mutableStateOf("all") }
+    var selectedType by remember { mutableStateOf("all") }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(title = { Text(stringResource(edu.metrostate.ics342.mediatracker.R.string.library_title)) })

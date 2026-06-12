@@ -37,7 +37,10 @@ import edu.metrostate.ics342.mediatracker.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.ColorFilter
+import edu.metrostate.ics342.mediatracker.data.UserRepository
 import edu.metrostate.ics342.mediatracker.theme.OnPrimaryContainer
 import edu.metrostate.ics342.mediatracker.theme.PrimaryContainer
 
@@ -45,13 +48,16 @@ import edu.metrostate.ics342.mediatracker.theme.PrimaryContainer
 fun RegisterScreen(
     onRegisterSuccess: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    viewModel: AuthViewModel = viewModel()
+    viewModel: RegisterViewModel = viewModel()
 ) {
-    val newName =""
-    val loginState  by viewModel.loginState.collectAsState()
+    val displayName     by viewModel.displayName.collectAsState()
+    val email           by viewModel.email.collectAsState()
+    val username        by viewModel.username.collectAsState()
+    val password        by viewModel.password.collectAsState()
+    val confirmPassword by viewModel.confirmPassword.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage    by remember { mutableStateOf<String?>(null) }
     val focusManager = LocalFocusManager.current
-    val isLoading = loginState is AuthViewModel.AuthUiState.Loading
-    val errorMsg  = (loginState as? AuthViewModel.AuthUiState.Error)?.msgResId?.let { stringResource(it) }
 
     Column(
         modifier = Modifier
@@ -74,12 +80,12 @@ fun RegisterScreen(
             textAlign = TextAlign.Center)
         Spacer(Modifier.height(40.dp))
         OutlinedTextField(
-            value         = newName,
-            onValueChange = viewModel::onEmailChange,
+            value         = displayName,
+            onValueChange = viewModel::setDisplayName,
             label         = { Text(stringResource(R.string.name_label))},
             singleLine    = true,
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
+                keyboardType = KeyboardType.Text,
                 imeAction    = ImeAction.Next
             ),
 
@@ -87,12 +93,12 @@ fun RegisterScreen(
         )
         Spacer(Modifier.height(24.dp))
         OutlinedTextField(
-            value         = newName,
-            onValueChange = viewModel::onEmailChange,
+            value         = username,
+            onValueChange = viewModel::setUsername,
             label         = { Text(stringResource(R.string.username_label))},
             singleLine    = true,
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
+                keyboardType = KeyboardType.Text,
                 imeAction    = ImeAction.Next
             ),
 
@@ -100,8 +106,8 @@ fun RegisterScreen(
         )
         Spacer(Modifier.height(24.dp))
         OutlinedTextField(
-            value         = newName,
-            onValueChange = viewModel::onEmailChange,
+            value         = email,
+            onValueChange = viewModel::setEmail,
             label         = { Text(stringResource(R.string.email_label))},
             singleLine    = true,
             keyboardOptions = KeyboardOptions(
@@ -113,8 +119,8 @@ fun RegisterScreen(
         )
         Spacer(Modifier.height(24.dp))
         OutlinedTextField(
-            value         = newName,
-            onValueChange = viewModel::onEmailChange,
+            value         = password,
+            onValueChange = viewModel::setPassword,
             label         = { Text(stringResource(R.string.password_label))},
             singleLine    = true,
             keyboardOptions = KeyboardOptions(
@@ -126,8 +132,8 @@ fun RegisterScreen(
         )
         Spacer(Modifier.height(24.dp))
         OutlinedTextField(
-            value         = newName,
-            onValueChange = viewModel::onEmailChange,
+            value         = confirmPassword,
+            onValueChange = viewModel::setConfirmPassword,
             label         = { Text(stringResource(R.string.confirm_password_label))},
             singleLine    = true,
             keyboardOptions = KeyboardOptions(
@@ -139,7 +145,7 @@ fun RegisterScreen(
         )
         Spacer(Modifier.height(16.dp))
         Button(
-            onClick  = { focusManager.clearFocus(); viewModel.onLoginClick() },
+            onClick  = { focusManager.clearFocus(); viewModel.onSignUpClicked() },
             enabled  = !isLoading,
             modifier = Modifier.fillMaxWidth().height(48.dp)
         ) {
