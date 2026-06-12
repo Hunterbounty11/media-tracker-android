@@ -7,11 +7,10 @@
 
 ## Commits This Week
 
-<!-- Paste a link to your commits for this week. The easiest way: go to your repo on GitHub,
-     click "commits", and copy the URL after filtering by your name or branch. -->
+
 
 **Link:**
-
+https://github.com/Hunterbounty11/media-tracker-android/commit/18274ce1a66847379882514ae9b79060635f84e9
 ---
 
 ## Code Review
@@ -31,13 +30,13 @@
 ---
 
 ## One Thing I Understood More Deeply
-
+I felt like I have started to understand the tie between ViewModel and screens much more deeply. I think I have also started to get a good grasp on how the global user repository will work. 
 
 ---
 
 ## One Thing I'm Still Confused About
-
-
+While I do think I have a good grasp on the user repository and I think that we will probably go over it next week when we talk about networking and APIs. 
+Where the user repository is initially coming from is still confusing me. Will it be initialized once and passed through between most screens to keep the user consistent
 
 ---
 
