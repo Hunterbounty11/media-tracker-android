@@ -15,18 +15,18 @@ https://github.com/Hunterbounty11/media-tracker-android/commit/18274ce1a66847379
 
 ## Code Review
 
-**Reviewed:** *(pod mate's name)*
+**Reviewed:** *Danny Kings*
 **Link to my review:**
-
+https://github.com/DannyKin/media-tracker-android/pull/4#pullrequestreview-4482028664
 ### What I Looked At
-
+I looked at his new register screen.
 
 ### What I Noticed
-
+Doesn't appear to have the view model done for the register screen so functionality of that is missing. However that might be due to the git issues that he was having at the end of class. Start of next class I want to go over everything as a pod to make sure we are all caught up to the same point. 
 
 
 ### Comments I Left
-
+One comment i left was just about the view model not being completed. The other comment was about a hardcoded string I found that he put in. I believe the fix for that can be done inside the string resource. 
 ---
 
 ## One Thing I Understood More Deeply
