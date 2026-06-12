@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import edu.metrostate.ics342.mediatracker.data.UserRepository
 import edu.metrostate.ics342.mediatracker.ui.activity.ActivityFeedScreen
 import edu.metrostate.ics342.mediatracker.ui.auth.LoginScreen
 import edu.metrostate.ics342.mediatracker.ui.auth.RegisterScreen
