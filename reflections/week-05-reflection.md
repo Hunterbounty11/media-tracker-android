@@ -10,7 +10,7 @@
 
 
 **Link:**
-
+https://github.com/Hunterbounty11/media-tracker-android/commit/b60d1324ebc594b3854046e20d13e01f554eed81
 ---
 
 ## Code Review
@@ -28,11 +28,12 @@
 ---
 
 ## One Thing I Understood More Deeply
-
+    This Week did a lot to help me understand the api and how you call it. I am not a 100% but I am getting there.  
 ---
 
 ## One Thing I'm Still Confused About
-
+    While this week did help I still did not get quite to the login screen. I got turned around a bit when i saw your branch having multiple files and the whole network folder.
+    I plan on going back through this again this week to try to learn it a bit better.
 ---
 
 ## Anything Else *(optional)*
