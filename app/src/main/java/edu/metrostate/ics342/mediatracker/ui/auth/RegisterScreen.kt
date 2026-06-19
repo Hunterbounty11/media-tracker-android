@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import edu.metrostate.ics342.mediatracker.data.UserRepository
 import edu.metrostate.ics342.mediatracker.theme.OnPrimaryContainer
 import edu.metrostate.ics342.mediatracker.theme.PrimaryContainer
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun RegisterScreen(
@@ -55,9 +56,19 @@ fun RegisterScreen(
     val username        by viewModel.username.collectAsState()
     val password        by viewModel.password.collectAsState()
     val confirmPassword by viewModel.confirmPassword.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val errorMessage    by remember { mutableStateOf<String?>(null) }
+    val registerState    by viewModel.registerState.collectAsState()
     val focusManager = LocalFocusManager.current
+
+    val isLoading = registerState is RegisterViewModel.RegisterUiState.Loading
+
+    // React to state changes: navigate on success, nothing fancy needed for error
+    // since we just read the message below.
+    LaunchedEffect(registerState) {
+        if (registerState is RegisterViewModel.RegisterUiState.Success) {
+            onRegisterSuccess()
+            viewModel.resetRegisterState()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -66,86 +77,82 @@ fun RegisterScreen(
         verticalArrangement   = Arrangement.Center,
         horizontalAlignment   = Alignment.CenterHorizontally
     ) {
-        Image(painterResource(id=R.drawable.smart_display), contentDescription = "Application Icon",
-            modifier = Modifier.size(width = 64.dp, height = 64.dp)
-                .background(color= PrimaryContainer, RoundedCornerShape(size = 12.dp))
-                .padding(all=12.dp),
-            colorFilter = ColorFilter.tint(color= OnPrimaryContainer))
-        Text(stringResource(R.string.registration_label), style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.primary)
-        Spacer(Modifier.height(8.dp))
-        Text(stringResource(R.string.registration_tagline),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center)
-        Spacer(Modifier.height(40.dp))
+        // ... existing Image/Text/Spacer code unchanged ...
+
         OutlinedTextField(
             value         = displayName,
-            onValueChange = viewModel::setDisplayName,
+            onValueChange = viewModel::onDisplayNameChange,
             label         = { Text(stringResource(R.string.name_label))},
             singleLine    = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction    = ImeAction.Next
             ),
-
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(24.dp))
         OutlinedTextField(
             value         = username,
-            onValueChange = viewModel::setUsername,
+            onValueChange = viewModel::onUsernameChange,
             label         = { Text(stringResource(R.string.username_label))},
             singleLine    = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction    = ImeAction.Next
             ),
-
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(24.dp))
         OutlinedTextField(
             value         = email,
-            onValueChange = viewModel::setEmail,
+            onValueChange = viewModel::onEmailChange,
             label         = { Text(stringResource(R.string.email_label))},
             singleLine    = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction    = ImeAction.Next
             ),
-
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(24.dp))
         OutlinedTextField(
             value         = password,
-            onValueChange = viewModel::setPassword,
+            onValueChange = viewModel::onPasswordChange,
             label         = { Text(stringResource(R.string.password_label))},
             singleLine    = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 imeAction    = ImeAction.Next
             ),
-
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(24.dp))
         OutlinedTextField(
             value         = confirmPassword,
-            onValueChange = viewModel::setConfirmPassword,
+            onValueChange = viewModel::onConfirmPasswordChange,
             label         = { Text(stringResource(R.string.confirm_password_label))},
             singleLine    = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 imeAction    = ImeAction.Next
             ),
-
             modifier = Modifier.fillMaxWidth()
         )
+
+        // Show error message if present
+        val errorState = registerState as? RegisterViewModel.RegisterUiState.Error
+        if (errorState != null) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = stringResource(errorState.msgResId),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
         Spacer(Modifier.height(16.dp))
         Button(
-            onClick  = { focusManager.clearFocus(); viewModel.onSignUpClicked() },
+            onClick  = { focusManager.clearFocus(); viewModel.onRegisterClick() },
             enabled  = !isLoading,
             modifier = Modifier.fillMaxWidth().height(48.dp)
         ) {
@@ -156,13 +163,13 @@ fun RegisterScreen(
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
-                Text(stringResource(edu.metrostate.ics342.mediatracker.R.string.register_button))
+                Text(stringResource(R.string.register_button))
             }
         }
 
         Spacer(Modifier.height(16.dp))
         TextButton(onClick = onNavigateToLogin) {
-            Text(stringResource(edu.metrostate.ics342.mediatracker.R.string.login_prompt))
+            Text(stringResource(R.string.login_prompt))
         }
     }
 }

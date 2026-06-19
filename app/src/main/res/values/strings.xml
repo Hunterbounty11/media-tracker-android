@@ -14,7 +14,11 @@
     <string name="username_label">Username</string>
     <string name="confirm_password_label">Confirm Password</string>
     <string name="registration_label">Create Account</string>
-    <string name="registration_tagline">Join the community</string>
+    <string name="error_empty_fields">Join the community</string>
+    <string name="error_passwords_mismatch">Join the community</string>
+    <string name="error_email_or_username_taken">Username or email already exist.</string>
+    <string name="error_network">Network Error please try again</string>
+    <string name="error_generic">Error. Try again</string>
 
 
     <!-- Navigation -->
