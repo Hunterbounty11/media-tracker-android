@@ -15,18 +15,18 @@ https://github.com/Hunterbounty11/media-tracker-android/commit/b60d1324ebc594b38
 
 ## Code Review
 
-**Reviewed:** **
+**Reviewed:** Danny King **
 **Link to my review:**
-
+https://github.com/DannyKin/media-tracker-android/pull/5#pullrequestreview-4529737516
 ### What I Looked At
-
-
+I followed along the process of registering as a user.
+I also looked at his string resource. He had a couple of issues at the beginning of class in attaching strings to the resource so I helped with that.
 ### What I Noticed
-
+He had a couple of imports that were new but still were commented out. 
 
 ### Comments I Left
 ---
-
+Just pointed out the import to see if he knew that it was commented out.
 ## One Thing I Understood More Deeply
     This Week did a lot to help me understand the api and how you call it. I am not a 100% but I am getting there.  
 ---
