@@ -1,5 +1,13 @@
 import com.android.build.api.dsl.ApplicationExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+
+val localProperties = Properties().apply {
+    val localFile = rootProject.file("local.properties")
+    if (localFile.exists()) {
+        load(localFile.inputStream())
+    }
+}
 
 plugins {
     alias(libs.plugins.android.application)
@@ -18,6 +26,9 @@ extensions.configure<ApplicationExtension> {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "CLIENT_ID", "\"${localProperties.getProperty("CLIENT_ID", "")}\"")
+        buildConfigField("String", "CLIENT_SECRET", "\"${localProperties.getProperty("CLIENT_SECRET", "")}\"")
     }
 
     buildTypes {
@@ -35,6 +46,7 @@ extensions.configure<ApplicationExtension> {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -44,7 +56,6 @@ kotlin {
         jvmTarget.set(JvmTarget.JVM_22)
     }
 }
-
 
 dependencies {
     implementation(libs.androidx.core.ktx)
