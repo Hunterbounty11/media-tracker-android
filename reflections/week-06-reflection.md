@@ -19,24 +19,29 @@ https://github.com/Hunterbounty11/media-tracker-android/commit/b60d1324ebc594b38
 **Link to my review:**
 https://github.com/DannyKin/media-tracker-android/pull/5#pullrequestreview-4529737516
 ### What I Looked At
-
+Danny's PR adds SearchScreen.kt, SearchViewModel.kt, SearchResultsScreen.kt, SearchComponents.kt, and searchResultsViewModel.kt.
 
 ### What I Noticed
+He did a good job of following along with the lecture mostly, he is pretty much just as behind as I am, I am hoping once I get caught up this weekend I can help him implement search a bit better.
+
 
 ### Comments I Left
+There was just a few things that could be cleaned up in resources right now. He no longer needs the string resource search_not_implemented 
+
+
 ---
 
-## One Thing I Understood More Deeply
-    This Week did a lot to help me understand the api and how you call it. I am not a 100% but I am getting there.  
+## One Thing I Understood More Deeply.
+This week really helped my understanding of the api constants. I was having issues where I was wondering why I consistently was getting null for the input, turns out I didnt have the local.properties under the root and instead had it inside of the app.
+Another thing I had some issues about be imports into gradel build kits however I realized I was forgetting to rebuild it and that solved quite a few issues.
 ---
 
 ## One Thing I'm Still Confused About
-    While this week did help I still did not get quite to the login screen. I got turned around a bit when i saw your branch having multiple files and the whole network folder.
-    I plan on going back through this again this week to try to learn it a bit better.
+The one thing I still am pretty confused about this week still has to be creating api calls. I didnt have time to fully work into the search function today, so I plan on exploring it more this weekend. I plan on doing another pull request this weekend and will update the reflection if progress is made. The thing I am still really struggling with is the posting of it though, finding out where I need to create the function was one of my big struggles this week 
 ---
 
 ## Anything Else *(optional)*
-
+I really dont know if the format of this is off only on my side or on both. Some times when I type text like this its small other times it retains size from the header in front of it.
 
 
 ---
