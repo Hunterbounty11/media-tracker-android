@@ -20,6 +20,10 @@ val OnTertiary          = Color(0xFFFFFFFF)
 val TertiaryContainer   = Color(0xFFCCFBF1)
 val OnTertiaryContainer = Color(0xFF134E4A)
 
+val MovieContainer   = Color(0xFFFCE4EC)
+val OnMovieContainer = Color(0xFF880E4F)
+
+
 // Neutral surfaces
 val Background      = Color(0xFFFAFAFF)
 val OnBackground    = Color(0xFF1A1A2E)

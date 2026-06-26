@@ -1,5 +1,6 @@
 package edu.metrostate.ics342.mediatracker.navigation
 
+import android.net.Uri
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -81,6 +82,9 @@ fun MediaTrackerNavGraph(navController: NavHostController) {
 
             composable(Routes.SEARCH) {
                 SearchScreen(
+                    onSearch = { query ->
+                        navController.navigate("search_results?query=${Uri.encode(query)}")
+                    },
                     onMediaClick = { mediaId -> navController.navigate("media_detail/$mediaId") }
                 )
             }
