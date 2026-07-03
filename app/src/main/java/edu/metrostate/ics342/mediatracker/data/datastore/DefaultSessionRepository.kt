@@ -43,8 +43,5 @@ class DefaultSessionRepository(private val context: Context) : SessionRepository
         context.dataStore.edit { it.clear() }
     }
 
-    override suspend fun search() {
-
-    }
 
 }

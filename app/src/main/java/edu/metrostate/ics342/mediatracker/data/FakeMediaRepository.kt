@@ -96,4 +96,46 @@ object FakeMediaRepository {
 
     val followers = listOf(userJordan, userPriya)
     val following = listOf(userMarco, userSarah)
+
+    val sampleMediaDetail = Media(
+        id             = 4,
+        mediaType      = "book",
+        title          = "Dune",
+        author         = "Frank Herbert",
+        director       = null,
+        creator        = null,
+        network        = null,
+        coverUrl       = null,
+        publishedYear  = 1965,
+        averageRating  = 4.8f,
+        ratingCount    = 1234,
+        genres         = listOf("Fantasy", "Science Fiction"),
+        description    = "A noble family becomes embroiled in a war for control over the most valuable substance in the universe on the desert planet Arrakis.",
+        pageCount      = 310,
+        runtimeMinutes = null,
+        seasonCount    = null,
+        episodeCount   = null,
+        isbn           = "9780441013593",
+        reviewCount    = 42
+    )
+    val sampleReview = Review(
+            userId     = "user-006",
+            mediaId    = 4,
+            rating     = 5,
+            reviewText = "A timeless classic. Fresh every time.",
+            createdAt  = "2024-01-20T10:00:00Z",
+            user       = userPriya,
+            media      = sampleMediaDetail
+        )
+        //Review(
+        //    userId     = "user-002",
+        //    mediaId    = 4,
+          //  rating     = 4,
+//reviewText = "Dense but rewarding — the world-building holds up decades later.",
+         //   createdAt  = "2024-01-18T15:30:00Z",
+           // user       = userJordan,
+          //  media      = sampleMediaDetail
+       // )
+    //)
+
 }
