@@ -15,7 +15,14 @@ data class Media(
     val publishedYear: Int? = null,
     val averageRating: Float = 0f,
     val ratingCount: Int = 0,
-    val genres: List<String> = emptyList()
+    val genres: List<String> = emptyList(),
+    val description: String? = null,
+    val pageCount: Int? = null,        // books
+    val runtimeMinutes: Int? = null,   // movies
+    val seasonCount: Int? = null,      // shows
+    val episodeCount: Int? = null,     // shows
+    val isbn: String? = null,          // books
+    val reviewCount: Int = 0
 )
 
 /** Returns a human-readable credit line appropriate for the media type. */

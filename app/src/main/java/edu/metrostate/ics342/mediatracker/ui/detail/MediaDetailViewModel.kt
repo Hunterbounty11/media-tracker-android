@@ -1,5 +1,6 @@
 package edu.metrostate.ics342.mediatracker.ui.detail
 
+import android.R
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,6 +11,9 @@ class MediaDetailViewModel : ViewModel() {
     // Also call GET /library to load current status for this item.
     private val _mediaId = MutableStateFlow(-1)
     val mediaId: StateFlow<Int> = _mediaId.asStateFlow()
+    private val _mediaType = MutableStateFlow(value="book")
+    val mediaType: StateFlow<String> = _mediaType.asStateFlow()
+
 
     fun setMediaId(id: Int) { _mediaId.value = id }
 }
