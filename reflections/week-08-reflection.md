@@ -10,38 +10,35 @@
 
 
 **Link:**
-https://github.com/Hunterbounty11/media-tracker-android/pull/7/changes/a20f8c7a3ca532b1d2eee3699d0397c49ccdca2c---
+https://github.com/Hunterbounty11/media-tracker-android/pull/8/changes/dcb90271722d2a30bd74c33d1b94cd59c170f392
+
 
 ## Code Review
 
-**Reviewed:** Danny King **
+**Reviewed:** Khalid Hassan **
 **Link to my review:**
-https://github.com/DannyKin/media-tracker-android/pull/7#pullrequestreview-4622365799
+https://github.com/Khalid-H634/media-tracker-android/pull/8#pullrequestreview-4668052468
+
 ### What I Looked At
-I looked at the new media details implementation as that was what we spent the most time on this week.
+I looked at his search results screen and the search results data model.
 ### What I Noticed
-He didn't have a preview function to iterate faster, also he has some references to files that don't exist yet.
+He has a bunch of hard coded references to the fake media repository instead of a reference that he just has to change one.(So when changing to api he has to hunt down all of the references to fake media repository instead of just the one)
 
 
 ### Comments I Left
-One of the comments I left was about the preview function, telling him if he implements it he can iterate and view his wireframe much faster than if he started app each time he wanted to view it. The other comment I left was just pointing out the missing file inside of resource/drawables. I mentioned he could use show and tv interchangably  if he cant find the file to import.
-
+I tried to leave comments on all of the places I found the FakeMediaRepository references. And recommended he goes with one val that he can just change up at the top of the file for easy changes
 ---
 
 ## One Thing I Understood More Deeply.
-I continue to grow in understanding of the viewModel and wireframe interaction. I am also growing increasingly familiar with building the wireframes.
-I feel as though I understand API calls a bit better, although I didn't create any new API Calls this week I did feel as making the fake api response really helped.
-
+This week greatly enhanced my understanding of how the api works. The fact that I was just missing the serializable on the Media class leading to a significant search today. Going forward it is hopefully something I learn to do to anything moving over network(I think that is when you have to use serializable if what I was reading was correct). I already did it on reviews as soon as I started moving to use the API to call them.
 ---
 
 ## One Thing I'm Still Confused About
-I think I am getting a way better grasp on most of the concepts being covered right now. Probably my greatest confusion is wireframe and viewModel interaction, my issue with that is I dont understand when exactly a variable should be in the viewModel and when it should be attached to the wireframe. This week I practically didnt interact with the viewModel almost at all.
-
+I am going to have to research why my app is stuck in capslock. Not a big deal and hasn't effected anything but it would be a nice to know. Also I need to look into why no reviews are actually coming through. All media results are showing no reviews for now.
 
 ---
 
 ## Anything Else *(optional)*
-This week I am commiting to not going back and changing my code to fit with the reference code. I have been doing that the last couple of weeks and I feel as though it has led to me being delayed on second half of the class objectives.
 
 ---
 
