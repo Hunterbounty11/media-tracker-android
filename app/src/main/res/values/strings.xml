@@ -102,6 +102,13 @@
     <string name="media_unknown_director">Unknown Director</string>
     <string name="media_unknown_creator">Unknown Creator</string>
     <string name="mediaPublishYear">Year</string>
+    <string name="Genre">Genre</string>
+    <string name="mediaPageCount">Pages</string>
+    <string name="mediaRuntime">Runtime</string>
+    <string name="mediaSeasonsEpisodes">Episodes</string>
+    <string name="mediaReviewCount">Reviews (%1$d)</string>
+    <string name="mediaWriteReview">+ Write Review</string>
+    <string name="mediaNoReview">No Reviews</string>
 
     <!-- Search  -->
     <string name="search_label">Search</string>

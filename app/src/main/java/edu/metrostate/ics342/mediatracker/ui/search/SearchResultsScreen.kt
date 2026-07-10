@@ -15,9 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.metrostate.ics342.mediatracker.R
+import edu.metrostate.ics342.mediatracker.data.FakeMediaRepository
+import edu.metrostate.ics342.mediatracker.data.model.Media
+import edu.metrostate.ics342.mediatracker.ui.detail.MediaDetailScreen
 
 @Composable
 fun SearchResultsScreen(
@@ -113,4 +117,93 @@ fun SearchResultsScreen(
             }
         }
     }
+}
+
+@Composable
+fun SearchResultsContent(
+    initialQuery: String,
+    results: List<Media>,
+    selectedType: String,
+    isLoading: Boolean,
+    onBack: () -> Unit,
+    onMediaClick: (Int) -> Unit,
+    onSearchAgain: (String) -> Unit,
+    onTypeSelect: (String) -> Unit,
+    onLoadNextPage: () -> Unit
+) {
+    var searchBarQuery by remember { mutableStateOf(initialQuery) }
+    val listState = rememberLazyListState()
+
+    val reachedBottom by remember {
+        derivedStateOf {
+            val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+            val total = listState.layoutInfo.totalItemsCount
+            total > 0 && lastVisible >= total - 5
+        }
+    }
+    LaunchedEffect(reachedBottom) { if (reachedBottom) onLoadNextPage() }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onBack) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.action_back))
+            }
+            OutlinedTextField(
+                value = searchBarQuery,
+                onValueChange = { searchBarQuery = it },
+                modifier = Modifier.weight(1f),
+                placeholder = { Text(stringResource(R.string.search_hint)) },
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = { onSearchAgain(searchBarQuery) })
+            )
+        }
+
+        MediaTypeFilterChips(
+            selectedType = selectedType,
+            onTypeSelect = onTypeSelect,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        Text(
+            text = stringResource(R.string.search_results_count, results.size),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+
+        LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+            items(results, key = { it.id }) { media ->
+                MediaResultCard(media = media, onClick = { onMediaClick(media.id) })
+            }
+            if (isLoading) {
+                item {
+                    Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SearchResultsScreenPreview() {
+    SearchResultsContent(
+        initialQuery = "dune",
+        results = FakeMediaRepository.mediaList,
+        selectedType = "",
+        isLoading = false,
+        onBack = {},
+        onMediaClick = {},
+        onSearchAgain = {},
+        onTypeSelect = {},
+        onLoadNextPage = {}
+    )
 }
