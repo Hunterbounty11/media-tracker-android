@@ -118,24 +118,23 @@ object FakeMediaRepository {
         isbn           = "9780441013593",
         reviewCount    = 42
     )
-    val sampleReview = Review(
-            userId     = "user-006",
-            mediaId    = 4,
+    val sampleReviews = listOf(
+        Review(
+            userId     = "user-003",
+            mediaId    = 1080,
             rating     = 5,
-            reviewText = "A timeless classic. Fresh every time.",
-            createdAt  = "2024-01-20T10:00:00Z",
-            user       = userPriya,
-            media      = sampleMediaDetail
-        )
-        //Review(
-        //    userId     = "user-002",
-        //    mediaId    = 4,
-          //  rating     = 4,
-//reviewText = "Dense but rewarding — the world-building holds up decades later.",
-         //   createdAt  = "2024-01-18T15:30:00Z",
-           // user       = userJordan,
-          //  media      = sampleMediaDetail
-       // )
-    //)
+            reviewText = "A staggering achievement — bigger, bolder, and more emotional than Part One.",
+            createdAt  = "2024-03-04T09:00:00Z",
+            user       = userPriya
+        ),
+        Review(
+            userId     = "user-004",
+            mediaId    = 1080,
+            rating     = 4,
+            reviewText = "Gorgeous to look at and thunderously scored. Drags a little in the middle.",
+            createdAt  = "2024-03-02T18:30:00Z",
+            user       = userMarco
+        ),
+    )
 
 }

@@ -2,6 +2,7 @@ package edu.metrostate.ics342.mediatracker.data.network
 
 import edu.metrostate.ics342.mediatracker.data.SessionRepository
 import edu.metrostate.ics342.mediatracker.data.model.Media
+import edu.metrostate.ics342.mediatracker.data.model.Review
 
 data class MediaPage(
     val items: List<Media>,
@@ -24,4 +25,7 @@ class DefaultMediaRepository(sessionRepository: SessionRepository) {
         val hasMore    = response.headers()["X-Has-More"] == "true"
         return MediaPage(items, nextCursor, hasMore)
     }
+    suspend fun getMediaDetail(id: Int): Media = api.getMediaDetail(id)
+    suspend fun getReviews(mediaId: Int): List<Review> =
+        api.getReviews(mediaId).body() ?: emptyList()
 }

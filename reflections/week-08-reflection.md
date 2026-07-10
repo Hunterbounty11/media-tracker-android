@@ -1,7 +1,7 @@
-# Week 7 Reflection
+# Week 8 Reflection
 
 **Name:Hunter**
-**Date:2 July 2026**
+**Date:9 July 2026**
 
 ---
 
