@@ -1,17 +1,22 @@
 package edu.metrostate.ics342.mediatracker.ui.library
 
 import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import edu.metrostate.ics342.mediatracker.data.FakeMediaRepository
+import edu.metrostate.ics342.mediatracker.data.datastore.DefaultSessionRepository
 import edu.metrostate.ics342.mediatracker.data.model.LibraryItem
 import edu.metrostate.ics342.mediatracker.data.model.LibraryStatus
+import edu.metrostate.ics342.mediatracker.data.network.DefaultMediaRepository
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class LibraryViewModel : ViewModel() {
+class LibraryViewModel(application: Application): AndroidViewModel(application) {
+    private val repo = DefaultMediaRepository(DefaultSessionRepository(application))
 
     private val _libraryItems = MutableStateFlow<List<LibraryItem>>(emptyList())
     val libraryItems: StateFlow<List<LibraryItem>> = _libraryItems.asStateFlow()
@@ -28,7 +33,12 @@ class LibraryViewModel : ViewModel() {
     fun loadLibrary() {
         viewModelScope.launch {
             _isLoading.value = true
-            _libraryItems.value = FakeMediaRepository.libraryItems
+            try {
+                _libraryItems.value = repo.getLibrary(_filterState.value.toApiString())
+            } catch (e: Exception) {
+                android.util.Log.e("LibraryVM", "load failed", e)
+                _libraryItems.value = emptyList()
+            }
             _isLoading.value = false
         }
     }

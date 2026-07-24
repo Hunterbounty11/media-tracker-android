@@ -2,6 +2,7 @@ package edu.metrostate.ics342.mediatracker.ui.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,6 +50,11 @@ fun MediaDetailScreen(
     viewModel: MediaDetailViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val inLibrary by viewModel.inLibrary.collectAsState()
+    val libraryPending by viewModel.libraryPending.collectAsState()
+    val favoritePending by viewModel.favoritePending.collectAsState()
+    val inFavorites by viewModel.inFavorites.collectAsState()
+
     LaunchedEffect(mediaId) { viewModel.load(mediaId) }
 
     when (val state = uiState) {
@@ -181,28 +187,47 @@ fun MediaDetailScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Button(
-                            onClick = { /* no-op tonight */ },
+                            onClick = { viewModel.addToLibrary(mediaId) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(48.dp),
                             shape = RoundedCornerShape(24.dp)
                         ) {
-                            Text("+ Want To", fontWeight = FontWeight.SemiBold)
+                            if (libraryPending) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(18.dp),
+                                    strokeWidth = 2.dp,
+                                    color = LocalContentColor.current
+                                )
+                            } else {
+                                Text(
+                                    if (inLibrary) "In Library" else "+ Want To",
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
                         }
                         OutlinedButton(
-                            onClick = { /* no-op tonight */ },
+                            onClick = {viewModel.addFavorite(mediaId)},
                             modifier = Modifier
                                 .weight(1f)
                                 .height(48.dp),
                             shape = RoundedCornerShape(24.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.FavoriteBorder,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(Modifier.width(6.dp))
-                            Text("Save", fontWeight = FontWeight.SemiBold)
+                            if (favoritePending) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(18.dp),
+                                    strokeWidth = 2.dp,
+                                    color = LocalContentColor.current
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = if (inFavorites) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(Modifier.width(6.dp))
+                                Text(if (inFavorites) "Saved" else "Save", fontWeight = FontWeight.SemiBold)
+                            }
                         }
                     }
                     Spacer(Modifier.width(4.dp))

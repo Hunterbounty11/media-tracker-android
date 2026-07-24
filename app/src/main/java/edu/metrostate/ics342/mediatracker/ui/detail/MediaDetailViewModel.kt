@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import edu.metrostate.ics342.mediatracker.data.datastore.DefaultSessionRepository
+import edu.metrostate.ics342.mediatracker.data.model.LibraryStatus
 import edu.metrostate.ics342.mediatracker.data.model.Media
 import edu.metrostate.ics342.mediatracker.data.model.Review
 import edu.metrostate.ics342.mediatracker.data.network.DefaultMediaRepository
@@ -25,9 +26,55 @@ class MediaDetailViewModel(application: Application) : AndroidViewModel(applicat
     private val _uiState = MutableStateFlow<DetailUiState>(DetailUiState.Loading)
     val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
 
+    private val _inLibrary =MutableStateFlow(false)
+    val inLibrary: StateFlow<Boolean> = _inLibrary.asStateFlow()
+
+    private val _libraryPending = MutableStateFlow(false)
+    val libraryPending: StateFlow<Boolean> = _libraryPending.asStateFlow()
+
+    private val _inFavorites = MutableStateFlow(false)
+    val inFavorites: StateFlow<Boolean> = _inFavorites.asStateFlow()
+
+   private val _favoritePending = MutableStateFlow(false)
+    val favoritePending: StateFlow<Boolean> = _favoritePending.asStateFlow()
+
+
+    fun addFavorite(mediaId: Int) {
+        if (_favoritePending.value || _inFavorites.value) return
+        viewModelScope.launch {
+            _favoritePending.value = true
+            val ok = try {
+                repo.addFavorite(mediaId)
+            } catch (e: Exception) {
+                android.util.Log.e("DetailVM", "add favorite failed", e)
+                false
+            }
+            if (ok) _inFavorites.value = true
+            _favoritePending.value = false
+        }
+    }
+
+    fun addToLibrary(mediaId: Int) {
+        if (_libraryPending.value || _inLibrary.value) return
+        viewModelScope.launch {
+            _libraryPending.value = true
+            val ok = try {
+                repo.addToLibrary(mediaId, LibraryStatus.WANT_TO.toApiString())
+            } catch (e: Exception) {
+                android.util.Log.e("DetailVM", "add to library failed", e)
+                false
+            }
+            if (ok) _inLibrary.value = true
+            _libraryPending.value = false
+        }
+    }
+
+
     fun load(mediaId: Int) {
         viewModelScope.launch {
             _uiState.value = DetailUiState.Loading
+            _inLibrary.value = false
+            _inFavorites.value = false
             try {
                 val media = repo.getMediaDetail(mediaId)
                 val reviews = try {
