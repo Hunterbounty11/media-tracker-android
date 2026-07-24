@@ -17,7 +17,7 @@ https://github.com/Hunterbounty11/media-tracker-android/pull/9/changes/abed0d9a5
 
 **Reviewed:** Danny King **
 **Link to my review:**
-https://github.com/DannyKin/media-tracker-android/pull/7#pullrequestreview-4622365799
+https://github.com/DannyKin/media-tracker-android/pull/9#pullrequestreview-4769639230
 ### What I Looked At
 I took a look at the library api calls and the library screen as that is where most of the focus was on this class
 ### What I Noticed
