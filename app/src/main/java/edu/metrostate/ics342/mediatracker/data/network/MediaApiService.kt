@@ -1,9 +1,12 @@
 package edu.metrostate.ics342.mediatracker.data.network
 
+import edu.metrostate.ics342.mediatracker.data.model.LibraryItem
 import edu.metrostate.ics342.mediatracker.data.model.Media
 import edu.metrostate.ics342.mediatracker.data.model.Review
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -21,5 +24,16 @@ interface MediaApiService {
 
     @GET("reviews")
     suspend fun getReviews(@Query("mediaId") mediaId: Int): Response<List<Review>>
+
+    @POST("library")
+    suspend fun addToLibrary(@Body body: LibraryRequest): Response<Unit>
+
+    @GET("library")
+    suspend fun getLibrary(@Query("status") status: String? = null): Response<List<LibraryItem>>
+
+
+
+    @POST("favorites")
+    suspend fun addFavorite(@Body body: FavoriteRequest): Response<Unit>
 
 }
