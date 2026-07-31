@@ -137,4 +137,31 @@ object FakeMediaRepository {
         ),
     )
 
+    val priorities = listOf(
+        Priority(
+            mediaId = 4,
+            priority = 1,
+            orderIndex = 0,
+            estimatedTimeHours = 6.0,
+            notes = "Friend recommended",
+            media = mediaList[3]      // Dune
+        ),
+        Priority(
+            mediaId = 7,
+            priority = 2,
+            orderIndex = 1,
+            estimatedTimeHours = 2.5,
+            notes = "For movie night",
+            media = mediaList[6]      // Interstellar
+        ),
+        Priority(
+            mediaId = 8,
+            priority = 3,
+            orderIndex = 2,
+            estimatedTimeHours = null,
+            notes = null,
+            media = mediaList[7]      // Severance
+        ),
+    )
+
 }

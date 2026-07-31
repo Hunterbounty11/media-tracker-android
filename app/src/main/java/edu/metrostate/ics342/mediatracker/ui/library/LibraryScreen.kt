@@ -149,7 +149,7 @@ private fun LibraryItemCard(
                 Column {
                     LibraryStatus.values().forEach { s ->
                         TextButton(
-                            onClick  = { onStatusChange(s); statusDialogVisible = false },
+                            onClick = { onStatusChange(s); statusDialogVisible = false },
                             modifier = Modifier.fillMaxWidth()
                         ) { Text(stringResource(s.labelRes)) }
                     }
@@ -157,14 +157,16 @@ private fun LibraryItemCard(
             },
             confirmButton = {},
             dismissButton = {
-                TextButton(onClick = { statusDialogVisible = false }) { Text(stringResource(edu.metrostate.ics342.mediatracker.R.string.settings_cancel_button)) }
+                TextButton(onClick = {
+                    statusDialogVisible = false
+                }) { Text(stringResource(edu.metrostate.ics342.mediatracker.R.string.settings_cancel_button)) }
             }
         )
     }
 
     Card(
-        modifier  = Modifier.fillMaxWidth().clickable { onClick() },
-        shape     = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -176,19 +178,23 @@ private fun LibraryItemCard(
             ) {
                 if (item.media.coverUrl != null) {
                     AsyncImage(
-                        model             = item.media.coverUrl,
+                        model = item.media.coverUrl,
                         contentDescription = item.media.title,
-                        contentScale      = ContentScale.Crop,
-                        modifier          = Modifier.fillMaxSize()
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
                     )
                 } else {
-                    Surface(color = MaterialTheme.colorScheme.surfaceVariant,
-                        modifier = Modifier.fillMaxSize()) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Text(when (item.media.mediaType) {
-                                "book" -> "📖"; "movie" -> "🎬"; "show" -> "📺"
-                                else -> "?"
-                            }, style = MaterialTheme.typography.titleLarge)
+                            Text(
+                                when (item.media.mediaType) {
+                                    "book" -> "📖"; "movie" -> "🎬"; "show" -> "📺"
+                                    else -> "?"
+                                }, style = MaterialTheme.typography.titleLarge
+                            )
                         }
                     }
                 }
@@ -197,39 +203,112 @@ private fun LibraryItemCard(
             Spacer(Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(item.media.title, style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold, maxLines = 2)
+                Text(
+                    item.media.title, style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold, maxLines = 2
+                )
                 Spacer(Modifier.height(2.dp))
-                Text(item.media.creatorCredit(LocalContext.current),
+                Text(
+                    item.media.creatorCredit(LocalContext.current),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 Spacer(Modifier.height(6.dp))
                 SuggestionChip(
                     onClick = { statusDialogVisible = true },
-                    label   = { Text(stringResource(item.status.labelRes),
-                        style = MaterialTheme.typography.labelSmall) }
+                    label = {
+                        Text(
+                            stringResource(item.status.labelRes),
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
                 )
             }
 
             Box {
                 IconButton(onClick = { menuExpanded = true }) {
-                    Icon(Icons.Outlined.MoreVert, stringResource(edu.metrostate.ics342.mediatracker.R.string.action_more_options))
+                    Icon(
+                        Icons.Outlined.MoreVert,
+                        stringResource(edu.metrostate.ics342.mediatracker.R.string.action_more_options)
+                    )
                 }
                 DropdownMenu(
-                    expanded         = menuExpanded,
+                    expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false }
                 ) {
                     DropdownMenuItem(
-                        text    = { Text(stringResource(edu.metrostate.ics342.mediatracker.R.string.action_change_status)) },
+                        text = { Text(stringResource(edu.metrostate.ics342.mediatracker.R.string.action_change_status)) },
                         onClick = { menuExpanded = false; statusDialogVisible = true }
                     )
                     DropdownMenuItem(
-                        text    = { Text(stringResource(edu.metrostate.ics342.mediatracker.R.string.action_remove_from_library),
-                            color = MaterialTheme.colorScheme.error) },
+                        text = {
+                            Text(
+                                stringResource(edu.metrostate.ics342.mediatracker.R.string.action_remove_from_library),
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        },
                         onClick = { menuExpanded = false; onRemove() }
                     )
                 }
             }
         }
+    }
+}
+@Composable
+private fun PriorityDialog(
+        onDismiss: () -> Unit,
+        onConfirm: (level: Int, hours: Double?, notes: String?) -> Unit
+    ) {
+        var selectedLevel by remember { mutableStateOf(1) }
+        var hoursText by remember { mutableStateOf("") }
+        var notesText by remember { mutableStateOf("") }
+
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text("Add to priorities") },
+            text = {
+                Column {
+                    Text("Priority level", style = MaterialTheme.typography.labelMedium)
+                    Spacer(Modifier.height(4.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        listOf(1 to "High", 2 to "Medium", 3 to "Low").forEach { (level, label) ->
+                            FilterChip(
+                                selected = selectedLevel == level,
+                                onClick = { selectedLevel = level },
+                                label = { Text(label) }
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value = hoursText,
+                        onValueChange = { hoursText = it.filter { c -> c.isDigit() || c == '.' } },
+                        label = { Text("Est. hours (optional)") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = notesText,
+                        onValueChange = { notesText = it },
+                        label = { Text("Notes (optional)") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    onConfirm(
+                        selectedLevel,
+                        hoursText.toDoubleOrNull(),
+                        notesText.ifBlank { null }
+                    )
+                }) { Text("Add") }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) { Text("Cancel") }
+            }
+        )
     }
 }

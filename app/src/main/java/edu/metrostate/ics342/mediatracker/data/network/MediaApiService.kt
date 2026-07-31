@@ -2,11 +2,13 @@ package edu.metrostate.ics342.mediatracker.data.network
 
 import edu.metrostate.ics342.mediatracker.data.model.LibraryItem
 import edu.metrostate.ics342.mediatracker.data.model.Media
+import edu.metrostate.ics342.mediatracker.data.model.Priority
 import edu.metrostate.ics342.mediatracker.data.model.Review
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -35,5 +37,12 @@ interface MediaApiService {
 
     @POST("favorites")
     suspend fun addFavorite(@Body body: FavoriteRequest): Response<Unit>
+
+
+    @GET("priorities")
+    suspend fun getPriorities(): Response<List<Priority>>
+
+    @PUT("priorities")
+    suspend fun putPriority(@Body body: PriorityRequest): Response<Unit>
 
 }
