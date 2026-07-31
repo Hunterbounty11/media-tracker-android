@@ -3,6 +3,8 @@ package edu.metrostate.ics342.mediatracker.data.model
 import androidx.annotation.StringRes
 import edu.metrostate.ics342.mediatracker.R
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
+
 
 @Serializable
 data class LibraryItem(
@@ -15,9 +17,9 @@ data class LibraryItem(
 )
 @Serializable
 enum class LibraryStatus(@param:StringRes val labelRes: Int) {
-    WANT_TO(R.string.status_want_to),
-    IN_PROGRESS(R.string.status_in_progress),
-    FINISHED(R.string.status_finished);
+    @SerialName("want_to")     WANT_TO(R.string.status_want_to),
+    @SerialName("in_progress") IN_PROGRESS(R.string.status_in_progress),
+    @SerialName("finished")    FINISHED(R.string.status_finished);
 
     fun toApiString(): String = when (this) {
         WANT_TO     -> "want_to"

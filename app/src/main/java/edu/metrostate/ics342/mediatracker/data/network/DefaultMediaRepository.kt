@@ -3,6 +3,7 @@ package edu.metrostate.ics342.mediatracker.data.network
 import edu.metrostate.ics342.mediatracker.data.SessionRepository
 import edu.metrostate.ics342.mediatracker.data.model.LibraryItem
 import edu.metrostate.ics342.mediatracker.data.model.Media
+import edu.metrostate.ics342.mediatracker.data.model.Priority
 import edu.metrostate.ics342.mediatracker.data.model.Review
 
 data class MediaPage(
@@ -44,5 +45,12 @@ class DefaultMediaRepository(sessionRepository: SessionRepository) {
         return response.isSuccessful || response.code() == 409
     }
 
+    suspend fun getPriorities(): List<Priority> =
+        api.getPriorities().body() ?: emptyList()
+
+    suspend fun putPriority(request: PriorityRequest): Boolean {
+        val response = api.putPriority(request)
+        return response.isSuccessful
+    }
 
 }
