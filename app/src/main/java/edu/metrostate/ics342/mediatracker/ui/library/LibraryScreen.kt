@@ -30,6 +30,7 @@ import edu.metrostate.ics342.mediatracker.data.model.creatorCredit
 @Composable
 fun LibraryScreen(
     onMediaClick: (Int) -> Unit,
+    onViewPriorities: () -> Unit,
     viewModel: LibraryViewModel = viewModel()
 ) {
     val items     by viewModel.libraryItems.collectAsState()
@@ -39,7 +40,11 @@ fun LibraryScreen(
     var selectedType by remember { mutableStateOf("all") }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text(stringResource(edu.metrostate.ics342.mediatracker.R.string.library_title)) })
+        TopAppBar(title = { Text(stringResource(edu.metrostate.ics342.mediatracker.R.string.library_title)) },
+                actions = {
+                 TextButton(onClick = onViewPriorities) {
+                Text("View Priorities")
+                     }})
 
         Row(
             modifier = Modifier
@@ -124,22 +129,33 @@ fun LibraryScreen(
                     item           = item,
                     onClick        = { onMediaClick(item.mediaId) },
                     onRemove       = { viewModel.removeItem(item.mediaId) },
-                    onStatusChange = { newStatus -> viewModel.updateStatus(item.mediaId, newStatus) }
-                )
+                    onStatusChange = { newStatus -> viewModel.updateStatus(item.mediaId, newStatus)},
+                    onAddToPriorities = { level, hours, notes ->
+                            viewModel.addToPriorities(
+                                mediaId = item.mediaId,
+                                priority = level,
+                                orderIndex = 0,
+                                estimatedTimeHours = hours,
+                                notes = notes
+                            )
+                        }
+                        )}
             }
         }
     }
-}
+
 
 @Composable
 private fun LibraryItemCard(
     item: LibraryItem,
     onClick: () -> Unit,
     onRemove: () -> Unit,
-    onStatusChange: (LibraryStatus) -> Unit
+    onStatusChange: (LibraryStatus) -> Unit,
+    onAddToPriorities: (Int, Double?, String?) -> Unit
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
     var statusDialogVisible by remember { mutableStateOf(false) }
+    var priorityDialogVisible by remember { mutableStateOf(false) }
 
     if (statusDialogVisible) {
         AlertDialog(
@@ -163,7 +179,15 @@ private fun LibraryItemCard(
             }
         )
     }
-
+    if (priorityDialogVisible) {
+        PriorityDialog(
+            onDismiss = { priorityDialogVisible = false },
+            onConfirm = { level, hours, notes ->
+                onAddToPriorities(level, hours, notes)
+                priorityDialogVisible = false
+            }
+        )
+    }
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
@@ -240,6 +264,12 @@ private fun LibraryItemCard(
                         text = { Text(stringResource(edu.metrostate.ics342.mediatracker.R.string.action_change_status)) },
                         onClick = { menuExpanded = false; statusDialogVisible = true }
                     )
+                    if (item.status == LibraryStatus.WANT_TO) {
+                        DropdownMenuItem(
+                            text = { Text("Add to priorities") },
+                            onClick = { menuExpanded = false; priorityDialogVisible = true }
+                        )
+                    }
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -311,4 +341,3 @@ private fun PriorityDialog(
             }
         )
     }
-}
