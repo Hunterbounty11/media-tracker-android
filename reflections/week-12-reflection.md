@@ -19,13 +19,16 @@ https://github.com/Hunterbounty11/media-tracker-android/pull/11/changes/7edca19a
 **Link to my review:**
 
 ### What I Looked At
-
+He was assigned reviews. So I tried to follow that process.
 ### What I Noticed
+He had a lot of values that were assigned the same name that he went and renamed. So now instead of response being default variable he seems to tweak it toward its actual function. libResponse for library and favResponse for is favorited.
+
+He also reduced description on other variables, currentState to current 
 
 ### Comments I Left
 
 ---
-
+I asked about why some variables got shortened while some got more descriptive names. And why it had to be changed.
 ## Bonus Feature — Final Status
 
 
