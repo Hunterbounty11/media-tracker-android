@@ -27,9 +27,20 @@ class LibraryViewModel(application: Application): AndroidViewModel(application) 
 
    private val _filterState = MutableStateFlow( value = LibraryStatus.WANT_TO)
     val filterState: StateFlow<LibraryStatus> = _filterState.asStateFlow()
+    private val _priorityCount = MutableStateFlow(0)
+    val priorityCount: StateFlow<Int> = _priorityCount.asStateFlow()
+
+    val isPriorityListFull: Boolean get() = _priorityCount.value >= MAX_PRIORITIES
+
+
+
     init {
         loadLibrary()
+        loadPriorityCount()
     }
+
+
+    companion object { const val MAX_PRIORITIES = 5 }
 
     fun loadLibrary() {
         viewModelScope.launch {
@@ -43,6 +54,18 @@ class LibraryViewModel(application: Application): AndroidViewModel(application) 
             _isLoading.value = false
         }
     }
+
+    fun loadPriorityCount() {
+        viewModelScope.launch {
+            _priorityCount.value = try {
+                repo.getPriorities().size
+            } catch (e: Exception) {
+                android.util.Log.e("LibraryVM", "priority count failed", e)
+                0
+            }
+        }
+    }
+
 
     fun removeItem(mediaId: Int) {
         _libraryItems.value = _libraryItems.value.filter { it.mediaId != mediaId }
@@ -61,15 +84,19 @@ class LibraryViewModel(application: Application): AndroidViewModel(application) 
     fun addToPriorities(
         mediaId: Int,
         priority: Int,
-        orderIndex: Int,
         estimatedTimeHours: Double? = null,
         notes: String? = null
     ) {
+        if (isPriorityListFull) {
+            android.util.Log.w("LibraryVM", "priority list full, blocking add")
+            return
+        }
         viewModelScope.launch {
             try {
-                repo.putPriority(
-                    PriorityRequest(mediaId, priority, orderIndex, estimatedTimeHours, notes)
+                val ok = repo.putPriority(
+                    PriorityRequest(mediaId, priority, _priorityCount.value, estimatedTimeHours, notes)
                 )
+                if (ok) loadPriorityCount()
             } catch (e: Exception) {
                 android.util.Log.e("LibraryVM", "add to priorities failed", e)
             }

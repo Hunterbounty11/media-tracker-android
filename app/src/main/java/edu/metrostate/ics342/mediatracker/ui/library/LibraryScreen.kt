@@ -39,6 +39,10 @@ fun LibraryScreen(
 
     var selectedType by remember { mutableStateOf("all") }
 
+
+    val priorityCount by viewModel.priorityCount.collectAsState()
+    val isPriorityFull = priorityCount >= LibraryViewModel.MAX_PRIORITIES
+
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(title = { Text(stringResource(edu.metrostate.ics342.mediatracker.R.string.library_title)) },
                 actions = {
@@ -130,11 +134,11 @@ fun LibraryScreen(
                     onClick        = { onMediaClick(item.mediaId) },
                     onRemove       = { viewModel.removeItem(item.mediaId) },
                     onStatusChange = { newStatus -> viewModel.updateStatus(item.mediaId, newStatus)},
+                    isPriorityFull    = isPriorityFull,
                     onAddToPriorities = { level, hours, notes ->
                             viewModel.addToPriorities(
                                 mediaId = item.mediaId,
                                 priority = level,
-                                orderIndex = 0,
                                 estimatedTimeHours = hours,
                                 notes = notes
                             )
@@ -151,6 +155,7 @@ private fun LibraryItemCard(
     onClick: () -> Unit,
     onRemove: () -> Unit,
     onStatusChange: (LibraryStatus) -> Unit,
+    isPriorityFull: Boolean,
     onAddToPriorities: (Int, Double?, String?) -> Unit
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
@@ -266,7 +271,8 @@ private fun LibraryItemCard(
                     )
                     if (item.status == LibraryStatus.WANT_TO) {
                         DropdownMenuItem(
-                            text = { Text("Add to priorities") },
+                            text = { Text(if (isPriorityFull) "Priorities full (5/5)" else "Add to priorities") },
+                            enabled = !isPriorityFull,
                             onClick = { menuExpanded = false; priorityDialogVisible = true }
                         )
                     }

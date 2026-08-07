@@ -4,8 +4,10 @@ import android.net.Uri
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -19,6 +21,8 @@ import edu.metrostate.ics342.mediatracker.ui.auth.RegisterScreen
 import edu.metrostate.ics342.mediatracker.ui.connections.ConnectionsScreen
 import edu.metrostate.ics342.mediatracker.ui.detail.MediaDetailScreen
 import edu.metrostate.ics342.mediatracker.ui.library.LibraryScreen
+import edu.metrostate.ics342.mediatracker.ui.priorities.PrioritiesScreen
+import edu.metrostate.ics342.mediatracker.ui.priorities.PrioritiesViewModel
 import edu.metrostate.ics342.mediatracker.ui.profile.EditProfileScreen
 import edu.metrostate.ics342.mediatracker.ui.profile.MyProfileScreen
 import edu.metrostate.ics342.mediatracker.ui.profile.UserProfileScreen
@@ -109,6 +113,21 @@ fun MediaTrackerNavGraph(navController: NavHostController) {
                 LibraryScreen(
                     onMediaClick = { mediaId -> navController.navigate("media_detail/$mediaId") },
                     onViewPriorities = { navController.navigate("priorities") }
+                )
+            }
+            composable(Routes.PRIORITIES) {
+                val viewModel: PrioritiesViewModel = viewModel()
+                val priorities by viewModel.priorities.collectAsState()
+                val isLoading by viewModel.isLoading.collectAsState()
+                val error by viewModel.errorMessage.collectAsState()
+                PrioritiesScreen(
+                    priorities     = priorities,
+                    isLoading      = isLoading,
+                    errorMessage   = error,
+                    onMove         = viewModel::onMove,
+                    onNavigateBack = { navController.popBackStack() },
+                    onMediaClick   = { mediaId -> navController.navigate("media_detail/$mediaId") },
+                    onDismissError = viewModel::clearError
                 )
             }
 

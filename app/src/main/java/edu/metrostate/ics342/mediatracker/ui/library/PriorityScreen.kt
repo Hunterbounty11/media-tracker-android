@@ -1,63 +1,164 @@
 package edu.metrostate.ics342.mediatracker.ui.priorities
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.DragHandle
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
-import edu.metrostate.ics342.mediatracker.data.FakeMediaRepository
 import edu.metrostate.ics342.mediatracker.data.model.Priority
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrioritiesScreen(
     priorities: List<Priority>,
+    isLoading: Boolean,
+    errorMessage: String?,
+    onMove: (from: Int, to: Int) -> Unit,
     onNavigateBack: () -> Unit,
-    onMediaClick: (Int) -> Unit
+    onMediaClick: (Int) -> Unit,
+    onDismissError: () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(
-            title = { Text("Priorities") },
-            navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
-                }
-            }
-        )
+    val snackbarHostState = remember { SnackbarHostState() }
 
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(priorities.sortedBy { it.orderIndex }, key = { it.mediaId }) { item ->
-                PriorityCard(item = item, onClick = { onMediaClick(item.mediaId) })
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            onDismissError()
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Priorities") },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { innerPadding ->
+        Box(Modifier.fillMaxSize().padding(innerPadding)) {
+            when {
+                isLoading && priorities.isEmpty() ->
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+
+                priorities.isEmpty() ->
+                    Text(
+                        "No priorities set — mark a 'Want To' item as a priority to see it here.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.align(Alignment.Center).padding(32.dp)
+                    )
+
+                else ->
+                    ReorderableList(
+                        items = priorities,
+                        onMove = onMove,
+                        onMediaClick = onMediaClick
+                    )
             }
         }
     }
 }
 
 @Composable
-private fun PriorityCard(item: Priority, onClick: () -> Unit) {
+private fun ReorderableList(
+    items: List<Priority>,
+    onMove: (Int, Int) -> Unit,
+    onMediaClick: (Int) -> Unit
+) {
+    val listState = rememberLazyListState()
+    val haptics = LocalHapticFeedback.current
+    val density = LocalDensity.current
+    val rowHeightPx = with(density) { 106.dp.toPx() }  // card height + 8dp spacing; tune if needed
+
+    var draggingIndex by remember { mutableStateOf<Int?>(null) }
+    var dragOffsetY by remember { mutableFloatStateOf(0f) }
+
+    LazyColumn(
+        state = listState,
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        itemsIndexed(items, key = { _, item -> item.mediaId }) { index, item ->
+            val isDragging = index == draggingIndex
+            PriorityCard(
+                item = item,
+                onClick = { if (draggingIndex == null) onMediaClick(item.mediaId) },
+                dragHandleModifier = Modifier.pointerInput(item.mediaId) {
+                    detectDragGesturesAfterLongPress(
+                        onDragStart = {
+                            draggingIndex = index
+                            dragOffsetY = 0f
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        },
+                        onDrag = { change, dragAmount ->
+                            change.consume()
+                            dragOffsetY += dragAmount.y
+                            val from = draggingIndex ?: return@detectDragGesturesAfterLongPress
+                            val target = (from + (dragOffsetY / rowHeightPx).roundToInt())
+                                .coerceIn(0, items.lastIndex)
+                            if (target != from) {
+                                onMove(from, target)
+                                draggingIndex = target
+                                dragOffsetY -= (target - from) * rowHeightPx
+                            }
+                        },
+                        onDragEnd = { draggingIndex = null; dragOffsetY = 0f },
+                        onDragCancel = { draggingIndex = null; dragOffsetY = 0f }
+                    )
+                },
+                modifier = Modifier
+                    .zIndex(if (isDragging) 1f else 0f)
+                    .graphicsLayer { translationY = if (isDragging) dragOffsetY else 0f }
+                    .then(if (isDragging) Modifier.shadow(8.dp, RoundedCornerShape(12.dp)) else Modifier)
+            )
+        }
+    }
+}
+
+@Composable
+private fun PriorityCard(
+    item: Priority,
+    onClick: () -> Unit,
+    dragHandleModifier: Modifier,
+    modifier: Modifier = Modifier
+) {
     Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        modifier = modifier.fillMaxWidth().clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(
-                modifier = Modifier.size(64.dp, 90.dp).clip(RoundedCornerShape(6.dp)),
+                Modifier.size(64.dp, 90.dp).clip(RoundedCornerShape(6.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 if (item.media.coverUrl != null) {
@@ -87,7 +188,7 @@ private fun PriorityCard(item: Priority, onClick: () -> Unit) {
 
             Spacer(Modifier.width(12.dp))
 
-            Column(modifier = Modifier.weight(1f)) {
+            Column(Modifier.weight(1f)) {
                 Text(
                     item.media.title,
                     style = MaterialTheme.typography.titleSmall,
@@ -112,9 +213,36 @@ private fun PriorityCard(item: Priority, onClick: () -> Unit) {
                     )
                 }
             }
+
+            Icon(
+                Icons.Outlined.DragHandle,
+                contentDescription = "Drag to reorder",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = dragHandleModifier.padding(start = 8.dp)
+            )
         }
     }
 }
+
+
+@Preview(showBackground = true, name = "Priorities — empty")
+@Composable
+private fun PrioritiesEmptyPreview() {
+    PrioritiesScreen(
+        priorities = emptyList(),
+        isLoading = false,
+        errorMessage = null,
+        onMove = { _, _ -> },
+        onNavigateBack = {},
+        onMediaClick = {},
+        onDismissError = {}
+    )
+}
+
+
+
+
+
 
 private fun priorityLabel(priority: Int): String = when (priority) {
     1 -> "High Priority"
@@ -124,13 +252,3 @@ private fun priorityLabel(priority: Int): String = when (priority) {
 
 private fun formatHours(hours: Double): String =
     if (hours == hours.toLong().toDouble()) hours.toLong().toString() else hours.toString()
-
-@Preview(showBackground = true)
-@Composable
-private fun PrioritiesScreenPreview() {
-    PrioritiesScreen(
-        priorities = FakeMediaRepository.priorities,
-        onNavigateBack = {},
-        onMediaClick = {}
-    )
-}
